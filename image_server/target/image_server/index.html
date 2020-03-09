@@ -1,0 +1,137 @@
+<!-- 前端修改模板-->
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>昕昕的图库</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="icon" type="image/png" href="assets/i/favicon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" sizes="192x192" href="assets/i/app-icon72x72@2x.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+    <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
+    <meta name="msapplication-TileImage" content="assets/i/app-icon72x72@2x.png">
+    <meta name="msapplication-TileColor" content="#0e90d2">
+    <!-- 引用外部css文件-->
+    <link rel="stylesheet" href="assets/css/amazeui.min.css">
+    <link rel="stylesheet" href="assets/css/app.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+
+<body id="blog-article-sidebar">
+<!-- header start -->
+<header class="am-g am-g-fixed blog-fixed blog-text-center blog-header">
+    <div class="am-u-sm-8 am-u-sm-centered">
+        <img width="120" src="http://127.0.0.1:8080/image_server/imageShow?imageId=40" alt="Amaze UI Logo"/>
+    </div>
+</header>
+<div style="background:peachpuff; color:darkred">
+    <h2 align="center"style="margin:0px">欢迎光临昕昕的图库！</h2>
+</div>
+
+<!-- header end -->
+<hr>
+
+<!-- nav start -->
+<nav class="am-g am-g-fixed blog-fixed blog-nav">
+    <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only blog-button" data-am-collapse="{target: '#blog-collapse'}" ><span class="am-sr-only">导航切换</span> <span class="am-icon-bars"></span></button>
+
+    <div class="am-collapse am-topbar-collapse" id="blog-collapse">
+        <ul class="am-nav am-nav-pills am-topbar-nav">
+        </ul>
+        <form class="am-topbar-form am-topbar-right am-form-inline" method="POST"
+              action="image" enctype="multipart/form-data">
+            <div class="am-form-group">
+                <input type="file" class="am-form-field am-input-sm" id="upload" name="upload">
+            </div>
+             <div class="am-form-group">
+                <input type="submit" class="am-form-field am-input-sm" style="height:41px">
+            </div>
+        </form>
+    </div>
+</nav>
+<!-- nav end -->
+<hr>
+<!-- content srart -->
+<div class="am-g am-g-fixed blog-fixed blog-content" id="app">
+    <figure data-am-widget="figure" class="am am-figure am-figure-default "   data-am-figure="{  pureview: 'true' }">
+        <div id="container">
+            <div v-for="image in images">
+                <img style="width:200px; height: 200px" v-bind:src="'imageShow?imageId=' + image.imageId">
+                <h3>{{image.imageName}}</h3>
+                <button style="width:100%" v-on:click.stop="remove(image.imageId)" class="am-btn am-btn-success">删除</button>
+            </div>
+        </div>
+    </figure>
+
+</div>
+<!-- content end -->
+<footer >
+    <div style="background:peachpuff; color:darkred">
+        <h2 align="center"style="margin:0px">谢谢光临，祝您开心。</h2>
+        <h2 align="center"style="margin:0px">这是很好很长的一生，愿我们每天活得热气腾腾。</h2>
+    </div>
+</footer>
+
+
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="assets/js/jquery.min.js"></script>
+<!--<![endif]-->
+<!--[if lte IE 8 ]>
+<script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
+<script src="assets/js/amazeui.ie8polyfill.min.js"></script>
+<![endif]-->
+<script src="assets/js/amazeui.min.js"></script>
+<script src="assets/js/pinto.min.js"></script>
+<script src="assets/js/img.js"></script>
+
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            author: "昕昕",
+            images: [
+            ]
+        },
+        methods: {
+            // GET /image
+            getImages() {
+                $.ajax({
+                    url: "image",
+                    type: "get",
+                    context: this,
+                    success: function(data, status) {
+                        // 此处的代码在浏览器收到响应之后, 才会执行到
+                        // 参数中的 data 这就相当于收到的 HTTP 响应中的 body 部分
+                        this.images = data;
+                        $('#app').resize();
+                    }
+                })
+            },
+            remove(imageId) {
+                $.ajax({
+                    url: "image?imageId=" + imageId,
+                    type: "delete",
+                    context: this,
+                    success: function(data, status) {
+                        this.getImages();
+                        // 弹出对话框
+                        alert("删除成功!");
+                    }
+                })
+            }
+        }
+    })
+
+    app.getImages();
+</script>
+</body>
+</html>
